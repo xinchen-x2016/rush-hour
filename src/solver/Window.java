@@ -2,10 +2,13 @@ package solver;
 
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 import Exception.*;
+import java.awt.*;
+import javax.swing.*;
 
-public class Window {
+public class Window extends JFrame{
 
 	private HashMap<Integer, Vehicle> vehicles;
 	private int[][] plan;
@@ -14,7 +17,12 @@ public class Window {
 	private int width;
 	private int height;
 	
-	public void changeState(String s) throws VehiclesIntersectException, VehiclesInvalidException {
+	private Label[][] label;
+	private GridLayout grid;
+	private JPanel chessboard;
+	private Color[] color;
+	
+ 	public void changeState(String s) throws VehiclesIntersectException, VehiclesInvalidException {
 		int[] newMoved = HashToMoved(s);
 		List<Integer> l = new LinkedList<>();
 		for(int i = 1; i < moved.length; i++) {
@@ -42,14 +50,28 @@ public class Window {
 		return ret;
 	}
 	
+	//initialize a window with width w and height h
 	public Window(int w, int h) {
 		this.width = w;
 		this.height = h;
 		plan = new int[width][height];
 		this.vehicles = new HashMap<Integer, Vehicle>();
 		his = new ArrayList<>();
+		
+		chessboard = new JPanel();
+		grid = new GridLayout(w,h);
+		chessboard.setLayout(grid);
+		label = new Label[w][h];
+		for(int i=0; i<label.length; i++){
+			for(int j=0; j<label[i].length; j++){
+				label[i][j].setBackground(Color.gray);
+				chessboard.add(label[i][j]);
+			}
+		}
+		setVisible(true);
 	}
 	
+	//initialize a window with a test file
 	public Window(File f) throws VehiclesIntersectException, VehiclesInvalidException, InvalidFileException {
 		List<String> S = FileToStrings(f);
 		if(S.size() < 2) throw new InvalidFileException();
@@ -60,6 +82,33 @@ public class Window {
 		
 		plan = new int[width][height];
 		this.vehicles = new HashMap<>();
+		
+		chessboard = new JPanel();
+		grid = new GridLayout(this.width,this.height);
+		chessboard.setLayout(grid);
+		label = new Label[this.width][this.height];
+		for(int i=0; i<label.length; i++){
+			for(int j=0; j<label[i].length; j++){
+				label[i][j].setBackground(Color.gray);
+				chessboard.add(label[i][j]);
+			}
+		}
+		setVisible(true);
+		color = new Color[Vehicle.vehicle_number];
+		color[0] = Color.red;
+		int k = 1;
+		while(k<Vehicle.vehicle_number){
+			Color t = new Color((new Double(Math.random()*128)).intValue()+128,
+					(new Double(Math.random()*128)).intValue()+128,
+					(new Double(Math.random()*128)).intValue()+128);
+			if(t.equals(Color.gray) || t.equals(Color.red))
+				k--;
+			for(int j=0; j<k; j++)
+				if(color[j].equals(t))
+					k--;
+			color[k] = t;
+			k++;
+		}
 		
 		for(int i = 2; i < S.size(); i++) {
 			Vehicle temp = new Vehicle(S.get(i));
@@ -157,7 +206,10 @@ public class Window {
 		for(int i = getLeft(V); i < getRight(V); i++) {
 			for(int j = getUp(V); j < getDown(V); j++) {
 				if(isValid(i, j)) {
-					if(isFree(i,j)) plan[i][j] = V.label;
+					if(isFree(i,j)){
+						plan[i][j] = V.label;
+						label[i][j].setBackground(color[V.label]);
+					}
 					else throw new VehiclesIntersectException();
 				}
 				else throw new VehiclesInvalidException();
@@ -170,6 +222,7 @@ public class Window {
 		for(int i = getLeft(V); i < getRight(V); i++) {
 			for(int j = getUp(V); j < getDown(V); j++) {
 				plan[i][j] = 0;
+				label[i][j].setBackground(Color.gray);
 			}
 		}
 	}
@@ -224,6 +277,5 @@ public class Window {
 		}
 		return S.toString();
 	}
-	
 	
 }
