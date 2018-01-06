@@ -5,10 +5,12 @@ import Exception.*;
 public class Vehicle {
 	// Set the car label automatically from '1'
 	public static int vehicle_number = 1;
-	
+	// label is the vehicle number, length is the vehicle length, X and Y are the absissa
+	// and the ordinate of the topleft cell, orientation is the vehicle orientation
 	protected int label, length, X, Y;
 	protected char orientation;
 	
+	//initialize the vehicle with 4 variables
 	public Vehicle(int x, int y, int len, char orientation) {
 		this.X = x;
 		this.Y = y;
@@ -17,6 +19,7 @@ public class Vehicle {
 		label = ++vehicle_number;
 	}
 	
+	//initialize the vehicle with 5 variables
 	public Vehicle(int x, int y, int len, char orientation, int label) {
 		this.X = x;
 		this.Y = y;
@@ -25,6 +28,7 @@ public class Vehicle {
 		this.label = label;
 	}
 	
+	//initialize the vehicle with a sentence
 	public Vehicle(String s) throws InvalidFileException {
 		String[] split = s.split(" ");
 		if(split.length != 5) throw new InvalidFileException();
